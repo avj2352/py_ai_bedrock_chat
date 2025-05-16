@@ -135,7 +135,7 @@ def init_agent_chat(model_id: str = "anthropic.claude-3-5-sonnet-20240620-v1:0")
     """Interactive chat with AWS Bedrock AI model."""
     console.print(Panel.fit(
         "🤖 [bold blue]Chat with AWS Bedrock Agent[/bold blue]\n"
-        "Type your messages and press Enter. Type 'Thank you' or 'Quit' to exit.",
+        "Type your messages and press Enter. Type 'thank you' or 'thanks' or 'quit' or 'exit' or 'bye' or 'nvm' to end chat.",
         title="AWS Bedrock Chat", 
         border_style="blue"
     ))
@@ -158,7 +158,7 @@ def init_agent_chat(model_id: str = "anthropic.claude-3-5-sonnet-20240620-v1:0")
         user_input = Prompt.ask("[bold green]You")
         
         # Check for exit commands
-        if user_input.lower() in ["thank you", "quit"]:
+        if user_input.lower() in ["thank you", "quit", "thanks", "exit", "bye", "nvm"]:
             console.print("\n🤖: Happy to help! Goodbye!")
             break
         

@@ -10,7 +10,7 @@ from typing import List, Dict
 # - Access chat logs
 # - Quit
 def main_menu_options() -> List[str]:
-    return ["1. Start a new chat", "2. Add / Remove MCP servers", "3. Access chat logs", "4. Quit"]
+    return ["1. Start a new chat", "2. Add / Remove MCP servers", "3. Setup AI Agent", "4. Quit"]
 
 
 # convert tools into format required by bedrock
