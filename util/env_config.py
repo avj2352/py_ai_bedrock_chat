@@ -3,6 +3,10 @@
     defined here
 """
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def _get_db_json_file_path():
     return os.environ.get("DB_JSON_FILE_PATH") or "config.json"

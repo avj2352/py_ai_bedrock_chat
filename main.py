@@ -30,7 +30,7 @@ def main(ctx: typer.Context):
         raise typer.Exit()    
     # if option == 1. Start a new chat
     elif choice_index is not None and options[choice_index] == main_menu_options()[0]:
-        init_agent_chat()
+        init_agent_chat(model_id="us.anthropic.claude-sonnet-4-20250514-v1:0")
     else:
         typer.echo(f"You selected: {options[choice_index]}")
 

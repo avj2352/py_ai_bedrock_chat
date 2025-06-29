@@ -21,11 +21,18 @@ from util.env_config import (
     AWS_REGION
 )
 
+# app exit phrases list
+EXIT_PHRASE_LIST = ['thanks', 'quit', 'thank you', 'nvm', 'exit', 'bye', 'clear', 'tq', 'wow']
+
 app = typer.Typer()
 console = Console()
 
 class BedrockChat:
-    def __init__(self, model_id: str = "anthropic.claude-3-sonnet-20240229-v1:0", max_retries: int = 5):
+    def __init__(self,
+                 model_id: str = "anthropic.claude-3-sonnet-20240229-v1:0",
+                 api_version: str = "bedrock-2023-05-31",
+                 max_retries: int = 5
+        ):
         """Initialize Bedrock client with the specified model."""
         self.bedrock_runtime = boto3.client(
             service_name="bedrock-runtime",
@@ -49,20 +56,20 @@ class BedrockChat:
             if "anthropic" in self.model_id:
                 body = {
                     "anthropic_version": "bedrock-2023-05-31",
-                    "max_tokens": 300,
+                    "max_tokens": 1000,
                     "messages": self.messages
                 }
             elif "claude" in self.model_id:  # Handle other Claude naming patterns
                 body = {
                     "anthropic_version": "bedrock-2023-05-31",
-                    "max_tokens": 300,
+                    "max_tokens": 1000,
                     "messages": self.messages
                 }
             else:
                 # Default to a generic format for other models
                 body = {
                     "prompt": prompt,
-                    "max_tokens": 300,
+                    "max_tokens": 1000,
                     "messages": self.messages
                 }
 
@@ -158,7 +165,7 @@ def init_agent_chat(model_id: str = "anthropic.claude-3-5-sonnet-20240620-v1:0")
         user_input = Prompt.ask("[bold green]You")
         
         # Check for exit commands
-        if user_input.lower() in ["thank you", "quit", "thanks", "exit", "bye", "nvm"]:
+        if user_input.lower() in EXIT_PHRASE_LIST:
             console.print("\n🤖: Happy to help! Goodbye!")
             break
         
@@ -169,5 +176,12 @@ def init_agent_chat(model_id: str = "anthropic.claude-3-5-sonnet-20240620-v1:0")
         
         # Display the response with Markdown formatting
         console.print("🤖:")
-        console.print(Markdown(response))
+        rendered_text = Markdown(response)
+        # add vertifcal scrolling
+        panel = Panel(
+            rendered_text,
+            expand=False,
+            padding=(1,1)
+        )
+        console.print(panel)
         console.print()  # Add a blank line for readability
