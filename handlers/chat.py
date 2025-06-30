@@ -4,6 +4,7 @@
 """
 #!/usr/bin/env python3
 import typer
+import pyperclip
 import boto3
 import json
 import time
@@ -14,6 +15,7 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.prompt import Prompt
 from botocore.exceptions import ClientError
+from models.file_data import AIResponse
 # ..custom
 from util.env_config import (
     AWS_ACCESS_KEY_ID,
@@ -23,6 +25,7 @@ from util.env_config import (
 
 # app exit phrases list
 EXIT_PHRASE_LIST = ['thanks', 'quit', 'thank you', 'nvm', 'exit', 'bye', 'clear', 'tq', 'wow']
+ai_responses = AIResponse(responses=[])
 
 app = typer.Typer()
 console = Console()
@@ -137,12 +140,26 @@ class BedrockChat:
             else:
                 raise Exception(f"Error getting response from Bedrock: {error_msg}")
 
+# copy to clipboard handler
+def copy_ai_response_to_clipboard(responses: List[str]) -> None:
+    """
+        Event handler to copy
+        AI responses to clipboard
+    """
+    response_string = ""
+    for text in responses:
+        response_string += "{}".format(text)
+        response_string += "\n"
+    # pyperclip.copy(responses)
+    pyperclip.copy(response_string)
+
 # main function
 def init_agent_chat(model_id: str = "anthropic.claude-3-5-sonnet-20240620-v1:0"):
     """Interactive chat with AWS Bedrock AI model."""
     console.print(Panel.fit(
         "🤖 [bold blue]Chat with AWS Bedrock Agent[/bold blue]\n"
-        "Type your messages and press Enter. Type 'thank you' or 'thanks' or 'quit' or 'exit' or 'bye' or 'nvm' to end chat.",
+        "Type your messages and press Enter. Type 'thank you' or 'thanks' or 'quit' or 'exit' or 'bye' or 'nvm' to end chat.\n"
+        "To copy ai responses to clipboard. Type 'copy' or 'cc'.\n",
         title="AWS Bedrock Chat", 
         border_style="blue"
     ))
@@ -168,6 +185,10 @@ def init_agent_chat(model_id: str = "anthropic.claude-3-5-sonnet-20240620-v1:0")
         if user_input.lower() in EXIT_PHRASE_LIST:
             console.print("\n🤖: Happy to help! Goodbye!")
             break
+        elif user_input.lower() == "copy" or user_input.lower() == "cc":
+            copy_ai_response_to_clipboard(responses=ai_responses.responses)
+            console.print("\n📖: Copied AI responses to clipboard ✅")
+            continue
         
         # Show "thinking" indication
         with console.status("[dim]🤖...[/dim]", spinner="dots"):
@@ -177,6 +198,8 @@ def init_agent_chat(model_id: str = "anthropic.claude-3-5-sonnet-20240620-v1:0")
         # Display the response with Markdown formatting
         console.print("🤖:")
         rendered_text = Markdown(response)
+        # append to responses - copy to clipboard feature
+        ai_responses.responses.append(response)
         # add vertifcal scrolling
         panel = Panel(
             rendered_text,

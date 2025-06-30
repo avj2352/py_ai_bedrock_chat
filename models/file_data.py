@@ -5,8 +5,10 @@
     - mcp
     - agent
 """
+from pydantic import BaseModel, Field
+from rich.markdown import Markdown
 from dataclasses import dataclass
-from typing import List
+from typing import List, Any
 
 # default agent list (prepopulate)
 default_agents: List[str] = [
@@ -31,7 +33,11 @@ class Mcp:
             raise ValueError("invalid type")
 
 # filedata structure
-@dataclass(kw_only=True)
-class FileData:
-    mcp: List[Mcp] = []
-    agents: List[str] = default_agents
+class FileData(BaseModel):
+    mcp: List[Mcp] = Field(default=[], description="list of mcp servers")
+    agents: List[str] = Field(default_agents, description="list of foundation models")
+
+
+# ai responses
+class AIResponse(BaseModel):
+    responses: List[str] = Field(..., description="list of ai responses") 

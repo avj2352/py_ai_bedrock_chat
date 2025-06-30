@@ -2,7 +2,7 @@
 handler for showing the main display
 """
 
-APP_VERSION: str = "v0.1.1"
+APP_VERSION: str = "v0.1.3"
 
 HELP_TEXT: str = f"""
  ______     __        ______   ______     __  __     ______     __  __     ______     ______  
